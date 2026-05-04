@@ -14,12 +14,17 @@
 #define MOTOR_R_IN4 8
 #define SERVO_PIN 10 
 
+#define MY_ROBOT_ID 2
+#define FULL_SPEED_DUTY 1023
+#define MID_SPEED_DUTY 700
+
 // Global variable to remember the servo's current position (614 is dead center)
 int current_servo_pos = 614;
 
 // Data package, it must be the same on both sides
 typedef struct __attribute__((packed))
 {
+    uint8_t robot_id;
     int left_joy_x;
     int left_joy_y;
     int right_joy_x;
@@ -74,9 +79,14 @@ void on_data_recv(const esp_now_recv_info_t *esp_now_info, const uint8_t *incomi
         return; // Safety check
     memcpy(&packet, incomingData, sizeof(packet));
 
+    if (packet.robot_id != MY_ROBOT_ID)
+    {
+        return;
+    }
+
     // Print to monitor
-    printf("LX:%d LY:%d | RX:%d RY:%d | L:%d R:%d\n",
-           packet.left_joy_x, packet.left_joy_y,
+    printf("ID:%d | LX:%d LY:%d | RX:%d RY:%d | L:%d R:%d\n",
+           packet.robot_id, packet.left_joy_x, packet.left_joy_y,
            packet.right_joy_x, packet.right_joy_y,
            packet.left_button, packet.right_button);
 
@@ -89,24 +99,22 @@ void on_data_recv(const esp_now_recv_info_t *esp_now_info, const uint8_t *incomi
     {
         // Full speed forward
         ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 800);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, FULL_SPEED_DUTY);
     }
-    // else if (packet.left_joy_y == 75) 
-    // {
-        
-    //     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
-    //     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 500);
-    // }
-    // else if (packet.left_joy_y == 25) 
-    // {
-        
-    //     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 500);
-    //     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
-    // }
+    else if (packet.left_joy_y == 75) 
+    {
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, MID_SPEED_DUTY);
+    }
+    else if (packet.left_joy_y == 25) 
+    {
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, MID_SPEED_DUTY);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
+    }
     else if (packet.left_joy_y == 0) 
     {
         // Full speed reverse
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 800);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, FULL_SPEED_DUTY);
         ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
     }
     else // LY is 50 (or any unexpected value)
@@ -120,26 +128,24 @@ void on_data_recv(const esp_now_recv_info_t *esp_now_info, const uint8_t *incomi
     if (packet.right_joy_y == 100) 
     {
         // Full speed forward
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 800);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, FULL_SPEED_DUTY);
         ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, 0);
     }
-    // else if (packet.right_joy_y == 75) 
-    // {
-        
-    //     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 0);
-    //     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, 500);
-    // }
-    // else if (packet.right_joy_y == 25) 
-    // {
-        
-    //     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 500);
-    //     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, 0);
-    // }
+    else if (packet.right_joy_y == 75) 
+    {
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, MID_SPEED_DUTY);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, 0);
+    }
+    else if (packet.right_joy_y == 25) 
+    {
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 0);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, MID_SPEED_DUTY);
+    }
     else if (packet.right_joy_y == 0) 
     {
         // Full speed reverse
         ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 0);
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, 800);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, FULL_SPEED_DUTY);
     }
     else // RY is 50 (or any unexpected value)
     {
