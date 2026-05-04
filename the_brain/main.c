@@ -120,8 +120,8 @@ void on_data_recv(const esp_now_recv_info_t *esp_now_info, const uint8_t *incomi
     if (packet.right_joy_y == 100) 
     {
         // Full speed forward
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 0);
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, 800);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 800);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, 0);
     }
     // else if (packet.right_joy_y == 75) 
     // {
@@ -138,8 +138,8 @@ void on_data_recv(const esp_now_recv_info_t *esp_now_info, const uint8_t *incomi
     else if (packet.right_joy_y == 0) 
     {
         // Full speed reverse
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 800);
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, 0);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 0);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_3, 800);
     }
     else // RY is 50 (or any unexpected value)
     {
