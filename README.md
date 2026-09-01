@@ -1,6 +1,6 @@
 # The Captain -robot
 
-![The Captain finished build](photos/captain-v2.jpeg)
+<img src="photos/captain-v2.jpeg" width="400">
 
 ## Overview
 
