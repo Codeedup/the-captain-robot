@@ -46,7 +46,7 @@ The inexpensive joysticks produced noisy values, so their output was intentional
 | Drive motors | 2 × N20, 6 V, 500 RPM |
 | Motor driver | DRV8833 dual H-bridge |
 | Weapon | Servo-powered flipper |
-| Battery | 200 mAh 2S LiPo, 7.4 V |
+| Battery | 300 mAh 2S LiPo, 7.4 V |
 | Power regulation | Adjustable buck converter |
 | Chassis | Custom 3D-printed V2 design |
 
